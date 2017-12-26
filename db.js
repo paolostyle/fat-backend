@@ -1,3 +1,5 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-export const db = mongoose.connect('mongodb://localhost/fat');
+const db = () => mongoose.connect('mongodb://localhost/fat');
+
+module.exports = db;

@@ -1,0 +1,38 @@
+{
+  "name": "fat-backend",
+  "version": "1.0.0",
+  "description": "Backend for Find A Tutor app",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paolostyle/fat-backend.git"
+  },
+  "keywords": [
+    "find",
+    "a",
+    "tutor",
+    "fat",
+    "backend",
+    "node",
+    "express"
+  ],
+  "author": "Paweł Dąbrowski <dabrowskip9@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paolostyle/fat-backend/issues"
+  },
+  "homepage": "https://github.com/paolostyle/fat-backend#readme",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "express-jwt": "^5.3.0",
+    "mongoose": "^4.13.7",
+    "passport": "^0.4.0",
+    "passport-facebook-token": "^3.3.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-nodemon": "^2.2.1"
+  }
+}

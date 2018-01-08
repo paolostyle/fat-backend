@@ -6,6 +6,7 @@ const db = require('./db');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const UserController = require('./User/UserController');
+const CourseController = require('./Course/CourseController');
 const app = express();
 
 db();
@@ -17,5 +18,6 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use('/api', UserController);
+app.use('/api', CourseController);
 
 module.exports = app;

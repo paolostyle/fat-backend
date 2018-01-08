@@ -6,6 +6,7 @@ const router = express.Router();
 const passport = require('passport');
 const Token = require('./FBAuthConfig/Token');
 const PassportConfig = require('./FBAuthConfig/PassportConfig');
+const expressJwt = require('express-jwt');
 
 PassportConfig();
 
@@ -23,6 +24,35 @@ router.route('/auth/facebook')
 	}, Token.generate, Token.send);
 
 router.route('/auth/me')
-	.get(Token.authenticate, User.getCurrentUser, User.getOne);
+	.get(expressJwt({
+		secret: process.env.TOKEN_SECRET,
+		requestProperty: 'auth',
+		getToken: function(req) {
+			if (req.headers['x-auth-token']) {
+				return req.headers['x-auth-token'];
+			}
+			return null;
+		}
+	}), getCurrentUser, getOne);
+
+function getCurrentUser(req, res, next) {
+	User.findById(req.auth.id, (err, user) => {
+		if (err) {
+			next(err);
+		} else {
+			req.user = user;
+			next();
+		}
+	});
+}
+
+function getOne(req, res) {
+	let user = req.user.toObject();
+
+	delete user['facebookProvider'];
+	delete user['__v'];
+
+	res.json(user);
+}
 
 module.exports = router;

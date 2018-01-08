@@ -1,7 +1,6 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
-const expressJwt = require('express-jwt');
 
 class Token {
 	static create(auth) {
@@ -16,19 +15,6 @@ class Token {
 	static send(req, res) {
 		res.setHeader('x-auth-token', req.token);
 		res.status(200).send(req.auth);
-	}
-
-	static authenticate() {
-		expressJwt({
-			secret: process.env.TOKEN_SECRET,
-			requestProperty: 'auth',
-			getToken: function(req) {
-				if (req.headers['x-auth-token']) {
-					return req.headers['x-auth-token'];
-				}
-				return null;
-			}
-		});
 	}
 }
 

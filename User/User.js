@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 
 let schemaConfig = {
+	fbId: {type: Number},
 	fullName: {type: String},
 	picture: {type: String},
 	email: {
@@ -22,26 +23,6 @@ let schemaConfig = {
 const userSchema = new mongoose.Schema(schemaConfig);
 
 class UserClass extends mongoose.Model {
-	static getCurrentUser(req, res, next) {
-		this.findById(req.auth.id, (err, user) => {
-			if (err) {
-				next(err);
-			} else {
-				req.user = user;
-				next();
-			}
-		});
-	}
-
-	static getOne(req, res) {
-		let user = req.user.toObject();
-
-		delete user['facebookProvider'];
-		delete user['__v'];
-
-		res.json(user);
-	}
-
 	static upsertFbUser(accessToken, refreshToken, profile, cb) {
 		let identifier = {
 			'facebookProvider.id': profile.id
@@ -50,8 +31,9 @@ class UserClass extends mongoose.Model {
 		let callback = (err, user) => {
 			if (!user) {
 				let newUser = new this({
+					fbId: profile.id,
 					fullName: profile.displayName,
-					picture: profile.picture,
+					picture: profile.photos[0].value,
 					email: profile.emails[0].value,
 					facebookProvider: {
 						id: profile.id,

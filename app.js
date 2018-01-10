@@ -2,14 +2,18 @@
 
 require('dotenv').config();
 const express = require('express');
-const db = require('./db');
+
+const mongoose = require('mongoose');
+require('./User/User');
+require('./Course/Course');
+
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const UserController = require('./User/UserController');
 const CourseController = require('./Course/CourseController');
-const app = express();
 
-db();
+mongoose.connect(process.env.MONGO_URI);
+const app = express();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({

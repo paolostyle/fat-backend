@@ -1,6 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const Course = require('../Course/Course');
 
 let schemaConfig = {
 	fbId: {type: Number},
@@ -21,8 +22,12 @@ let schemaConfig = {
 };
 
 const userSchema = new mongoose.Schema(schemaConfig);
+userSchema.pre('remove', function(next) {
+	Course.remove({user: this._id}).exec();
+	next();
+});
 
-class UserClass extends mongoose.Model {
+class User extends mongoose.Model {
 	static upsertFbUser(accessToken, refreshToken, profile, cb) {
 		let identifier = {
 			'facebookProvider.id': profile.id
@@ -56,4 +61,4 @@ class UserClass extends mongoose.Model {
 
 userSchema.set('toJSON', {getters: true, virtuals: true});
 
-module.exports = mongoose.model(UserClass, userSchema);
+module.exports = mongoose.model(User, userSchema);

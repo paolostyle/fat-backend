@@ -6,9 +6,20 @@ const router = express.Router();
 const passport = require('passport');
 const Token = require('./FBAuthConfig/Token');
 const PassportConfig = require('./FBAuthConfig/PassportConfig');
+const Helpers = require('../helpers');
 const expressJwt = require('express-jwt');
 
 PassportConfig();
+const jwtConfig = {
+	secret: process.env.TOKEN_SECRET,
+	requestProperty: 'auth',
+	getToken: function(req) {
+		if (req.headers['x-auth-token']) {
+			return req.headers['x-auth-token'];
+		}
+		return null;
+	}
+};
 
 router.route('/auth/facebook')
 	.post(passport.authenticate('facebook-token', {session: false}), (req, res, next) => {
@@ -24,17 +35,18 @@ router.route('/auth/facebook')
 	}, Token.generate, Token.send);
 
 router.route('/auth/me')
-	.get(expressJwt({
-		secret: process.env.TOKEN_SECRET,
-		requestProperty: 'auth',
-		getToken: function(req) {
-			if (req.headers['x-auth-token']) {
-				return req.headers['x-auth-token'];
-			}
-			return null;
-		}
-	}), getCurrentUser, getOne);
+	.get(expressJwt(jwtConfig), getCurrentUser, getOne);
 
+router.route('/auth/remove/:id')
+	.delete(expressJwt(jwtConfig), (req, res) => {
+		User.findById(req.params.id, (err, user) => {
+			if (err) return res.status(500).send(Helpers.jsonifyMessage('Podczas usuwania użytkownika wystąpił błąd.'));
+			user.remove();
+			res.status(200).send(Helpers.jsonifyMessage('Konto zostało usunięte.'));
+		});
+	});
+
+/* helper functions */
 function getCurrentUser(req, res, next) {
 	User.findById(req.auth.id, (err, user) => {
 		if (err) {
